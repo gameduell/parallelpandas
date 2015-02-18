@@ -13,6 +13,23 @@ def apply_worker(result_queue, data, offset, chunk_size, f_pickled, kwargs):
 
 
 def apply(data, f, n_processes=mp.cpu_count(), **kwargs):
+    """
+    parallel version of apply
+
+    Parameters
+    ----------
+    data : Series or DataFrame
+        the pandas object to apply data on
+    f : function
+        the function to apply
+    n_processes : int (optional)
+        specify the number of processes to use, otherwise use all
+    Additional keyword arguments will be passed on to pandas apply operation
+
+    Returns
+    -------
+    result of apply operation
+    """
     # Compute chunk size
     chunk_size = (len(data)-1) // n_processes + 1
     # Pickle function
@@ -54,6 +71,24 @@ def groupby_apply_worker(result_queue, dataframe, columns, f_pickled,
 
 
 def groupby_apply(dataframe, columns, func, n_processes=mp.cpu_count()):
+    """
+    parallel version of groupby/apply
+
+    Parameters
+    ----------
+    data : Series or DataFrame
+        the pandas object to apply data on
+    columns : list or Index
+        subset of columns to used to group by
+    func : function
+        the function pass to apply of the grouper object
+    n_processes : int (optional)
+        specify the number of processes to use, otherwise use all
+
+    Returns
+    -------
+    result of groupby/apply operation
+    """
     # Pickle function
     f_pickled = dill.dumps(func)
     # Segmentize rows such that two rows belonging to the same group
