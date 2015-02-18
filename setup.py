@@ -12,5 +12,5 @@ setup(
     description = "parallel version of some pandas function",
     license = "MIT",
     keywords = "pandas mutliprocessing parallel",
-    url = "https://github.com/GameDuell/parallelpandas",
+    url = "https://github.com/GameDuell/parallelpandas", requires=['dill', 'pandas']
 )
