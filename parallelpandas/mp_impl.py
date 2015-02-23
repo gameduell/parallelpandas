@@ -95,7 +95,7 @@ def groupby_apply(dataframe, columns, func, n_processes=mp.cpu_count()):
     # are assigned to the same segment
     segments = apply(dataframe[columns],
                      lambda x: hash(tuple(x.values)) % n_processes,
-                     nProcesses=mp.cpu_count(), axis=1)
+                     n_processes=mp.cpu_count(), axis=1)
     # Init and start workers
     result_queue = mp.Queue()
     processes = []
