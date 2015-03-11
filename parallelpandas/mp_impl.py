@@ -1,7 +1,7 @@
-import dill
 import multiprocessing as mp
+mp.set_start_method('spawn')
 import pandas as pd
-
+import dill
 
 def apply_worker(result_queue, data, offset, chunk_size, f_pickled, kwargs):
     # Unpickle the function
