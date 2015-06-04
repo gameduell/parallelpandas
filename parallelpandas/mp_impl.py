@@ -1,7 +1,19 @@
 import multiprocessing as mp
-mp.set_start_method('spawn')
 import pandas as pd
 import dill
+from functools import wraps
+
+__spawn_ctx__ = None
+
+
+def get_mp_ctx(f):
+    def with_ctx(*args, **kws):
+        global __spawn_ctx__
+        if __spawn_ctx__ is None:
+            __spawn_ctx__ = mp.get_context('spawn')
+        return f(*args, mp_ctx=__spawn_ctx__, **kws)
+    return wraps(f)(with_ctx)
+
 
 def apply_worker(result_queue, data, offset, chunk_size, f_pickled, kwargs):
     # Unpickle the function
@@ -12,7 +24,8 @@ def apply_worker(result_queue, data, offset, chunk_size, f_pickled, kwargs):
     return True
 
 
-def apply(data, f, n_processes=mp.cpu_count(), **kwargs):
+@get_mp_ctx
+def apply(data, f, n_processes=mp.cpu_count(), mp_ctx=None, **kwargs):
     """
     parallel version of apply
 
@@ -70,7 +83,9 @@ def groupby_apply_worker(result_queue, dataframe, columns, f_pickled,
     return True
 
 
-def groupby_apply(dataframe, columns, func, n_processes=mp.cpu_count()):
+@get_mp_ctx
+def groupby_apply(dataframe, columns, func,
+                  n_processes=mp.cpu_count(), mp_ctx=None):
     """
     parallel version of groupby/apply
 
