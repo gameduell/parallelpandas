@@ -48,10 +48,10 @@ def apply(data, f, n_processes=mp.cpu_count(), mp_ctx=None, **kwargs):
     # Pickle function
     f_pickled = dill.dumps(f)
     # Start workers
-    result_queue = mp.Queue()
+    result_queue = mp_ctx.Queue()
     processes = []
     for offset in range(n_processes):
-        p = mp.Process(target=apply_worker,
+        p = mp_ctx.Process(target=apply_worker,
                        args=(result_queue, data, offset, chunk_size,
                              f_pickled, kwargs))
         p.daemon = True
@@ -112,10 +112,10 @@ def groupby_apply(dataframe, columns, func,
                      lambda x: hash(tuple(x.values)) % n_processes,
                      n_processes=mp.cpu_count(), axis=1)
     # Init and start workers
-    result_queue = mp.Queue()
+    result_queue = mp_ctx.Queue()
     processes = []
     for iSegment in range(n_processes):
-        p = mp.Process(target=groupby_apply_worker,
+        p = mp_ctx.Process(target=groupby_apply_worker,
                        args=(result_queue, dataframe, columns,
                              f_pickled, iSegment, segments))
         p.daemon = True
